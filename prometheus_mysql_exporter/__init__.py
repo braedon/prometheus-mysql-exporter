@@ -154,7 +154,7 @@ def main():
     for name, (interval, query, value_columns) in queries.items():
         mysql_client = MySQLdb.connect(
             host = mysql_host,
-            port = mysql_port,
+            port = int(mysql_port),
             user = username,
             passwd = password,
             autocommit = True,
