@@ -36,6 +36,9 @@ To run a container successfully, you will need to mount a query config file to `
 ```
 If you don't want to mount the query config file in at run time, you could extend an existing image with your own Dockerfile that copies the config file in at build time.
 
+The password can also be provided as an environment variable named
+`MYSQL_PASSWORD` so that it can be sourced from secrets.
+
 # Development
 To install directly from the git repo, run the following in the root project directory:
 ```

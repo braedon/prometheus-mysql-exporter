@@ -5,6 +5,7 @@ import logging
 import sched
 import time
 import MySQLdb
+import os
 
 from prometheus_client import start_http_server, Gauge
 
@@ -137,7 +138,11 @@ def main():
     dbs = args.mysql_databases.split(',')
 
     username = args.mysql_user
-    password = args.mysql_password
+
+    if args.mysql_password != '':
+        password = args.mysql_password
+    else:
+        password = os.getenv('MYSQL_PASSWORD', '')
 
     config = configparser.ConfigParser()
     config.read(args.config_file)
