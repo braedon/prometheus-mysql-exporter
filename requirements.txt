@@ -1,0 +1,2 @@
+mysqlclient==1.4.4
+prometheus-client==0.7.1
