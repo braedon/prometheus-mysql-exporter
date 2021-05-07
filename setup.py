@@ -34,10 +34,12 @@ setup(
     install_requires=[
         'click',
         'click-config-file',
+        'croniter',
         'DBUtils ~= 1.3',
         'jog',
         'PyMySQL',
         'prometheus-client >= 0.6.0',
+        'pytz',
     ],
     entry_points={
         'console_scripts': [

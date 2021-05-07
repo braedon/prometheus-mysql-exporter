@@ -41,6 +41,7 @@ class QueryMetricCollector(object):
 def run_query(mysql_client, query_name, db_name, query, value_columns,
               on_error, on_missing):
 
+    log.debug('running query: %s', query_name)
     try:
         conn = mysql_client.connection()
 
@@ -204,6 +205,7 @@ def cli(**options):
             query_name = section[len(query_prefix):]
             interval = config.getfloat(section, 'QueryIntervalSecs',
                                        fallback=15)
+            cron = config.get(section, 'QueryCronString', fallback=None)
             db_name = config.get(section, 'QueryDatabase')
             query = config.get(section, 'QueryStatement')
             value_columns = config.get(section, 'QueryValueColumns').split(',')
@@ -213,7 +215,7 @@ def cli(**options):
                                         fallback='drop')
 
             queries[query_name] = (interval, db_name, query, value_columns,
-                                   on_error, on_missing)
+                                   on_error, on_missing, cron)
 
     scheduler = sched.scheduler()
 
@@ -228,13 +230,15 @@ def cli(**options):
                         autocommit=True)
     if timezone:
         mysql_kwargs['init_command'] = "SET time_zone = '{}'".format(timezone)
+    else:
+        timezone = None
 
     mysql_client = PersistentDB(creator=pymysql, **mysql_kwargs)
 
     if queries:
         for query_name, (interval, db_name, query, value_columns,
-                         on_error, on_missing) in queries.items():
-            schedule_job(scheduler, interval,
+                         on_error, on_missing, cron) in queries.items():
+            schedule_job(scheduler, interval, cron, timezone,
                          run_query, mysql_client, query_name,
                          db_name, query, value_columns, on_error, on_missing)
     else:
