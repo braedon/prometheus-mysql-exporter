@@ -34,6 +34,7 @@ setup(
     install_requires=[
         'click',
         'click-config-file',
+        'cryptography',
         'DBUtils ~= 1.3',
         'jog',
         'PyMySQL',
