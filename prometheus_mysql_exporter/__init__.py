@@ -140,6 +140,8 @@ CONFIGPARSER_CONVERTERS = {
 @click.command(context_settings=CONTEXT_SETTINGS)
 @click.option('--port', '-p', default=9207,
               help='Port to serve the metrics endpoint on. (default: 9207)')
+@click.option('--listen-address', '-l', default='0.0.0.0',
+              help='Ip address to listen for incoming requests (default: 0.0.0.0)')
 @click.option('--config-file', '-c', default='exporter.cfg', type=click.File(),
               help='Path to query config file. '
                    'Can be absolute, or relative to the current working directory. '
@@ -186,6 +188,7 @@ def cli(**options):
     logging.captureWarnings(True)
 
     port = options['port']
+    listen_address = options['listen_address']
     mysql_host, mysql_port = options['mysql_server']
 
     mysql_username = options['mysql_user']
@@ -198,6 +201,7 @@ def cli(**options):
     config_dir_file_pattern = os.path.join(options['config_dir'], '*.cfg')
     config_dir_sorted_files = sorted(glob.glob(config_dir_file_pattern))
     config.read(config_dir_sorted_files)
+
 
     query_prefix = 'query_'
     queries = {}
@@ -253,7 +257,7 @@ def cli(**options):
     REGISTRY.register(QueryMetricCollector())
 
     log.info('Starting server...')
-    start_http_server(port)
+    start_http_server(port, listen_address)
     log.info('Server started on port %(port)s', {'port': port})
 
     scheduler.run()
